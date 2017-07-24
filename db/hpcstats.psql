@@ -1,0 +1,139 @@
+-------------------------------------------------------------
+---      PostgreSQL script for HPCStats database
+-------------------------------------------------------------
+
+
+CREATE TABLE Userhpc(
+        userhpc_id         SERIAL,
+        userhpc_login      character varying(30) NOT NULL,
+        userhpc_name       character varying(30) NOT NULL,
+        userhpc_firstname  character varying(30),
+        userhpc_department character varying(30),
+        CONSTRAINT Userhpc_pkey PRIMARY KEY (userhpc_id),
+        CONSTRAINT Userhpc_unique UNIQUE (userhpc_login)
+);
+
+CREATE TABLE Cluster(
+        cluster_id   SERIAL,
+        cluster_name character varying(30) NOT NULL,
+        CONSTRAINT Cluster_pkey PRIMARY KEY (cluster_id),
+        CONSTRAINT Cluster_unique UNIQUE (cluster_name)
+);
+
+CREATE TABLE Job(
+        job_id         SERIAL,
+        job_sched_id   integer NOT NULL,
+        job_batch_id   character varying(30) NOT NULL,
+        job_nbCpu      integer NOT NULL,
+        job_name       character varying(200),
+        job_state      character varying(50) NOT NULL,
+        job_queue      character varying(50),
+        job_account    character varying(50),
+        job_submission timestamp NOT NULL,
+        job_start      timestamp,
+        job_end        timestamp,
+        userhpc_id     integer NOT NULL,
+        cluster_id     integer NOT NULL,
+        project_id     integer,
+        business_code  character varying(30),
+        CONSTRAINT Job_pkey PRIMARY KEY (job_id),
+        CONSTRAINT Job_unique UNIQUE (job_batch_id, cluster_id)
+);
+
+CREATE TABLE Account(
+        account_uid      integer NOT NULL,
+        account_gid      integer NOT NULL,
+        account_creation date NOT NULL,
+        account_deletion date,
+        userhpc_id       integer NOT NULL,
+        cluster_id       integer NOT NULL,
+        CONSTRAINT Account_pkey PRIMARY KEY (userhpc_id, cluster_id)
+);
+
+CREATE TABLE Node(
+        node_id        SERIAL,
+        node_name      character varying(30) NOT NULL,
+        node_model     character varying(50) NOT NULL,
+        node_nbCpu     integer,
+        node_partition character varying(30) NOT NULL,
+        node_flops     bigint NOT NULL,
+        node_memory    bigint NOT NULL,
+        cluster_id     integer NOT NULL,
+        CONSTRAINT Node_pkey PRIMARY KEY (node_id, cluster_id),
+        CONSTRAINT Node_unique UNIQUE (node_name, cluster_id)
+);
+
+CREATE TABLE Run(
+        job_id         integer NOT NULL,
+        node_id        integer NOT NULL,
+        cluster_id     integer NOT NULL,
+        CONSTRAINT Run_pkey PRIMARY KEY (job_id, node_id, cluster_id)
+);
+
+CREATE TABLE Event(
+        event_id     SERIAL,
+        event_type   character varying(50) NOT NULL,
+        event_reason character varying(200),
+        event_nbCpu  integer NOT NULL,
+        event_start  timestamp NOT NULL,
+        event_end    timestamp,
+        node_id      integer NOT NULL,
+        cluster_id   integer NOT NULL,
+        CONSTRAINT Event_pkey PRIMARY KEY (event_id, node_id),
+        CONSTRAINT Event_unique UNIQUE (node_id, cluster_id, event_start)
+);
+
+CREATE TABLE Project(
+        project_id          SERIAL,
+        project_code        character varying(30) NOT NULL,
+        project_description text,
+        domain_id           character varying(4),
+        CONSTRAINT Project_pkey PRIMARY KEY (project_id),
+        CONSTRAINT Project_unique UNIQUE (project_code)
+);
+
+CREATE TABLE Business(
+        business_code        character varying(30) NOT NULL,
+        business_description text,
+        CONSTRAINT Business_pkey PRIMARY KEY (business_code)
+);
+
+CREATE TABLE Domain(
+        domain_id   character varying(4) NOT NULL,
+        domain_name character varying(50),
+        CONSTRAINT Domain_pkey PRIMARY KEY (domain_id),
+        CONSTRAINT Domain_unique UNIQUE (domain_name)
+);
+
+CREATE TABLE filesystem(
+        filesystem_id   SERIAL,
+        filesystem_name character varying(30) NOT NULL,
+        cluster_id      integer NOT NULL,
+        CONSTRAINT filesystem_pkey PRIMARY KEY (filesystem_id, cluster_id),
+        CONSTRAINT filesystem_unique UNIQUE (filesystem_name, cluster_id)
+);
+
+CREATE TABLE fsusage(
+        fsusage_time   timestamp NOT NULL,
+        fsusage_usage  real NOT NULL,
+        fsusage_inode  real,
+        filesystem_id  integer NOT NULL,
+        cluster_id     integer NOT NULL,
+        CONSTRAINT fsusage_pkey PRIMARY KEY (fsusage_time, filesystem_id, cluster_id)
+);
+
+ALTER TABLE ONLY Job ADD CONSTRAINT FK_Job_userhpc_id FOREIGN KEY (userhpc_id) REFERENCES Userhpc(userhpc_id);
+ALTER TABLE ONLY Job ADD CONSTRAINT FK_Job_cluster_id FOREIGN KEY (cluster_id) REFERENCES Cluster(cluster_id);
+ALTER TABLE ONLY Job ADD CONSTRAINT FK_Job_project_id FOREIGN KEY (project_id) REFERENCES Project(project_id);
+ALTER TABLE ONLY Job ADD CONSTRAINT FK_Job_business_code FOREIGN KEY (business_code) REFERENCES Business(business_code);
+ALTER TABLE ONLY Run ADD CONSTRAINT FK_Run_node_id FOREIGN KEY (node_id, cluster_id) REFERENCES Node(node_id, cluster_id);
+ALTER TABLE ONLY Run ADD CONSTRAINT FK_Run_job_id FOREIGN KEY (job_id) REFERENCES Job(job_id);
+ALTER TABLE ONLY Run ADD CONSTRAINT FK_Run_cluster_id FOREIGN KEY (cluster_id) REFERENCES Cluster(cluster_id);
+ALTER TABLE ONLY Account ADD CONSTRAINT FK_Account_userhpc_id FOREIGN KEY (userhpc_id) REFERENCES Userhpc(userhpc_id);
+ALTER TABLE ONLY Account ADD CONSTRAINT FK_Account_cluster_id FOREIGN KEY (cluster_id) REFERENCES Cluster(cluster_id);
+ALTER TABLE ONLY Node ADD CONSTRAINT FK_Node_cluster_id FOREIGN KEY (cluster_id) REFERENCES Cluster(cluster_id);
+ALTER TABLE ONLY Event ADD CONSTRAINT FK_Event_node_id FOREIGN KEY (node_id, cluster_id) REFERENCES Node(node_id, cluster_id);
+ALTER TABLE ONLY Project ADD CONSTRAINT FK_Project_domain_id FOREIGN KEY (domain_id) REFERENCES Domain(domain_id);
+ALTER TABLE ONLY filesystem ADD CONSTRAINT FK_filesystem_cluster_id FOREIGN KEY (cluster_id) REFERENCES Cluster(cluster_id);
+ALTER TABLE ONLY fsusage ADD CONSTRAINT FK_fsusage_filesystem_id FOREIGN KEY (filesystem_id, cluster_id) REFERENCES filesystem(filesystem_id, cluster_id);
+ALTER TABLE ONLY fsusage ADD CONSTRAINT FK_fsusage_cluster_id FOREIGN KEY (cluster_id) REFERENCES Cluster(cluster_id);
