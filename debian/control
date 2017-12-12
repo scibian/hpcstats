@@ -1,8 +1,10 @@
 Source: hpcstats
 Section: net
 Priority: optional
-Maintainer: Rémi Palancher <remi-externe.palancher@edf.fr>
+Maintainer: Scibian Project <packaging@scibian.org>
 Homepage: http://github.com/edf-hpc/hpcstats
+Vcs-Git: https://github.com/scibian/hpcstats.git
+Vcs-Browser: https://github.com/scibian/hpcstats
 Build-Depends:
  debhelper (>= 8),
  python-all (>= 2.6.6-3~),
