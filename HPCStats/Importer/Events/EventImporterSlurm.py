@@ -35,6 +35,7 @@ import time
 from datetime import datetime
 from HPCStats.Exceptions import HPCStatsSourceError
 from HPCStats.Utils import extract_tres_cpu
+from HPCStats.Errors.Registry import HPCStatsErrorsRegistry as Errors
 from HPCStats.Importer.Events.EventImporter import EventImporter
 from HPCStats.Model.Event import Event, get_datetime_end_last_event, get_datetime_start_oldest_unfinished_event
 from HPCStats.Model.Node import Node
@@ -56,6 +57,7 @@ class EventImporterSlurm(EventImporter):
         self._dbname = config.get(section,"name")
         self._dbuser = config.get(section,"user")
         self._dbpass = config.get_default(section, "password", None)
+        self.prefix = config.get_default(section, 'prefix', self.cluster.name)
         self.conn = None
         self.cur = None
 
@@ -166,7 +168,7 @@ class EventImporterSlurm(EventImporter):
         """
 
         req = "SHOW COLUMNS FROM %s_event_table LIKE 'cpu_count'" \
-              % (self.cluster.name)
+              % (self.prefix)
         self.cur.execute(req)
         row = self.cur.fetchone()
         if row is not None:
@@ -204,7 +206,7 @@ class EventImporterSlurm(EventImporter):
                 WHERE node_name <> ''
                   AND time_start >= %%s
                 ORDER BY time_start
-              """ % (cpu_field, self.cluster.name)
+              """ % (cpu_field, self.prefix)
         params = ( timestamp, )
 
         self.cur.execute(req, params)
@@ -227,9 +229,11 @@ class EventImporterSlurm(EventImporter):
                                  None, None, None, None, None)
             node = self.app.arch.find_node(searched_node)
             if node is None:
-                raise HPCStatsSourceError( \
-                        "event node %s not found in loaded nodes" \
-                          % (node_name))
+                self.log.warn(Errors.E_E0001,
+                              "event node %s is unknown in cluster %s "
+                              "architecture, ignoring this event",
+                              node_name, self.cluster.name)
+                continue
 
             if old_schema is True:
                 nb_cpu = row[3]

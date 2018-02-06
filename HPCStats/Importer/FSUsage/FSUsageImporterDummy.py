@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2011-2015 EDF SA
+# Copyright (C) 2011-2018 EDF SA
 # Contact:
 #       CCN - HPC <dsp-cspit-ccn-hpc@edf.fr>
 #       1, Avenue du General de Gaulle
@@ -27,17 +27,32 @@
 # On Calibre systems, the complete text of the GNU General
 # Public License can be found in `/usr/share/common-licenses/GPL'.
 
-from HPCStats.Tests.Mocks.ArchitectureImporter import MockArchitectureImporter
-from HPCStats.Tests.Mocks.UserImporter import MockUserImporter
-from HPCStats.Tests.Mocks.ProjectImporter import MockProjectImporter
-from HPCStats.Tests.Mocks.BusinessCodeImporter import MockBusinessCodeImporter
+"""This module contains the FSUsageImporterDummy class."""
 
-class MockApp(object):
+from HPCStats.Importer.FSUsage.FSUsageImporter import FSUsageImporter
 
-    def __init__(self, db, config, cluster):
-        self.params = { 'since_event': '1970-01-01',
-                        'since_jobid': -1 }
-        self.arch = MockArchitectureImporter(self, db, config, cluster.name)
-        self.users = MockUserImporter(self, db, config, cluster)
-        self.projects = MockProjectImporter(self, db, config)
-        self.business = MockBusinessCodeImporter(self, db, config)
+class FSUsageImporterDummy(FSUsageImporter):
+
+    """This class is a dummy FSUsageImporter."""
+
+    def __init__(self, app, db, config, cluster):
+
+        super(FSUsageImporterDummy, self).__init__(app, db, config, cluster)
+
+    def check(self):
+        """Dummy FSUsage check"""
+
+        self.log.debug("FSUsageImporterDummy check")
+
+    def load(self):
+        """Dummy FSUsage load."""
+
+        self.log.debug("FSUsageImporterDummy load")
+
+        self.filesystems = []
+        self.fsusages = []
+
+    def update(self):
+        """Dummy FSUsage update."""
+
+        self.log.debug("FSUsageImporterDummy update")

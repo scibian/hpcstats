@@ -68,6 +68,10 @@ class JobImporterSlurm(JobImporter):
                              'window_size',
                              0, int)
 
+        self.prefix = config.get_default(section, 'prefix', self.cluster.name)
+
+        self.partitions = config.get_list(section, 'partitions')
+
         self.strict_job_account_binding = \
           config.get_default('constraints',
                              'strict_job_account_binding',
@@ -194,7 +198,7 @@ class JobImporterSlurm(JobImporter):
         """
 
         req = "SHOW COLUMNS FROM %s_job_table LIKE 'cpus_alloc'" \
-              % (self.cluster.name)
+              % (self.prefix)
         self.cur.execute(req)
         row = self.cur.fetchone()
         if row is not None:
@@ -224,6 +228,12 @@ class JobImporterSlurm(JobImporter):
         else:
             cpu_field = 'tres_alloc'
 
+        if not len(self.partitions):
+            partitions_clause = ''
+        else:
+            partitions_clause = "AND job.partition IN (%s)" % \
+                                ','.join(['%s'] * len(self.partitions))
+
         req = """
                 SELECT job_db_inx,
                        id_job,
@@ -246,14 +256,16 @@ class JobImporterSlurm(JobImporter):
                        %s_assoc_table assoc,
                        qos_table qos
                  WHERE job_db_inx >= %%s
+                   %s
                    AND assoc.id_assoc = job.id_assoc
                    AND qos.id = job.id_qos
               ORDER BY job_db_inx %s
               """ % (cpu_field,
-                     self.cluster.name,
-                     self.cluster.name,
+                     self.prefix,
+                     self.prefix,
+                     partitions_clause,
                      limit)
-        params = ( batchid, )
+        params = ( batchid, ) + tuple(self.partitions)
         self.cur.execute(req, params)
         while (1):
             row = self.cur.fetchone()

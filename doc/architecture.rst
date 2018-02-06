@@ -101,7 +101,7 @@ are summarised in the following table:
 |                  | * ``Run``               |                                          |
 +------------------+-------------------------+------------------------------------------+
 | ``FSUsage``      | * ``filesystem``        | * :py:mod:`FSUsageImporterSSH`           |
-|                  | * ``fsusage``           |                                          |
+|                  | * ``fsusage``           | * :py:mod:`FSUsageImporterDummy`         |
 +------------------+-------------------------+------------------------------------------+
 | ``Event``        | * ``Event``             | * :py:mod:`EventImporterSlurm`           |
 +------------------+-------------------------+------------------------------------------+
@@ -216,4 +216,8 @@ associated connectors annd their corresponding reasons:
 |                |                                     | directory. This is probably an old  |
 |                |                                     | user account that has been deleted  |
 |                |                                     | from the LDAP directory.            |
++----------------+-------------------------------------+-------------------------------------+
+| ``E_E0001``    | :py:mod:`EventImporterSlurm`        | An event has been found in SlurmDBD |
+|                |                                     | on a node unknown in cluster        |
+|                |                                     | architecture.                       |
 +----------------+-------------------------------------+-------------------------------------+
