@@ -1,3 +1,9 @@
+hpcstats (1.6.0sci9u1) scibian9; urgency=medium
+
+  * Scibian9 rebuild
+
+ -- Rémi Palancher <remi-externe.palancher@edf.fr>  Fri, 20 Jul 2018 10:46:28 +0200
+
 hpcstats (1.6.0) unstable; urgency=medium
 
   [ Thomas HAMEL ]
