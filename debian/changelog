@@ -1,3 +1,9 @@
+hpcstats (1.6.1sci9u1) scibian9; urgency=medium
+
+  * Scibian9 rebuild
+
+ -- Rémi Palancher <remi-externe.palancher@edf.fr>  Wed, 19 Dec 2018 16:38:04 +0100
+
 hpcstats (1.6.1) unstable; urgency=medium
 
   * tests: use native mock_open()
