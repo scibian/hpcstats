@@ -1,3 +1,9 @@
+hpcstats (1.6.2sci8u1) scibian8; urgency=medium
+
+  * Import Debian version 1.6.2
+
+ -- Frédéric Ballan <frederic-externe.ballan@edf.fr>  Mon, 20 Jul 2020 14:29:36 +0200
+
 hpcstats (1.6.2) unstable; urgency=medium
 
   [ Frédéric Ballan ]
