@@ -1,3 +1,9 @@
+hpcstats (1.6.3sci8u1) scibian8; urgency=medium
+
+  * Import Debian version 1.6.3
+
+ -- Frédéric Ballan <frederic-externe.ballan@edf.fr>  Tue, 16 Mar 2021 17:10:48 +0100
+
 hpcstats (1.6.3) unstable; urgency=medium
 
   * Correct handling of unlimited walltime
