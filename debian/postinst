@@ -20,7 +20,7 @@ case "$1" in
     configure)
         # if the system user does not exist, create it
         if [ ! $(id -u hpcstats 2>/dev/null) ]; then
-            adduser --quiet --system --shell=/bin/sh --no-create-home hpcstats
+            adduser --quiet --system --shell=/bin/sh --no-create-home --home /nonexistent hpcstats
         fi
         # if the PostgreSQL user does not exist, create it
         if ! $(su postgres -c 'psql -c "\du"' 2>/dev/null | grep -q hpcstats); then
@@ -62,6 +62,13 @@ case "$1" in
             echo "Upgrading DB schema to add job walltime column"
             su hpcstats -c "\
                 psql hpcstatsdb < /usr/share/hpcstats/db/migrations/004_add_walltime.psql"
+        fi
+        # test if fsquota table must be created for the fsquota agent coming with
+        # HPCStats v1.6.3
+        if ! $(su hpcstats -c "psql hpcstatsdb -c '\dt'" | grep -q fsquota); then
+            echo "Upgrading DB schema to add fsquota table"
+            su hpcstats -c "\
+                psql hpcstatsdb < /usr/share/hpcstats/db/migrations/005_table_fsquota.psql"
         fi
 
     ;;
