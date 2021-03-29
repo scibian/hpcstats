@@ -1,3 +1,9 @@
+hpcstats (1.6.3sci9u2) scibian8; urgency=medium
+
+  * Add package hpcstats-fsquota-agent
+
+ -- Frédéric Ballan <frederic-externe.ballan@edf.fr>  Mon, 29 Mar 2021 17:08:29 +0200
+
 hpcstats (1.6.3sci9u1) scibian9; urgency=medium
 
   * Import Debian version 1.6.3
