@@ -1,3 +1,9 @@
+hpcstats (1.6.3sci9u3) scibian9; urgency=medium
+
+  * Fix distribution
+
+ -- Frédéric Ballan <frederic-externe.ballan@edf.fr>  Mon, 29 Mar 2021 18:37:20 +0200
+
 hpcstats (1.6.3sci9u2) scibian9; urgency=medium
 
   * Add package hpcstats-fsquota-agent
