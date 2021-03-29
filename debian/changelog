@@ -1,4 +1,4 @@
-hpcstats (1.6.3sci9u2) scibian8; urgency=medium
+hpcstats (1.6.3sci9u2) scibian9; urgency=medium
 
   * Add package hpcstats-fsquota-agent
 
