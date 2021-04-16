@@ -1,3 +1,9 @@
+hpcstats (1.6.3sci9u4) scibian9; urgency=medium
+
+  * Fix fsquota cron job
+
+ -- Frédéric Ballan <frederic-externe.ballan@edf.fr>  Fri, 16 Apr 2021 17:52:49 +0200
+
 hpcstats (1.6.3sci9u3) scibian9; urgency=medium
 
   * Fix distribution
